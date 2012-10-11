@@ -2,6 +2,8 @@
 namespace Goetas\XmlXsdEncoder;
 
 
+use Doctrine\Common\Util\Inflector;
+
 abstract class AbstractEncoder {
 
 	private static $refCacheProp = array();
@@ -12,6 +14,13 @@ abstract class AbstractEncoder {
 			return $variabile[$index];
 		}elseif(is_object($variabile)){
 			return self::objectExtract($variabile, $index)->getValue($variabile);
+		}
+	}
+	protected static function tryGetValueFrom($variabile, $index){
+		try {
+			return self::getValueFrom($variabile, $index);
+		} catch (\ReflectionException $e) {
+			return null;
 		}
 	}
 	protected static function setValueTo(&$variabile, $index, $value){
@@ -36,9 +45,7 @@ abstract class AbstractEncoder {
 				self::$refCacheObj[$c] = new \ReflectionObject($obj);
 			}
 			try {
-				$varName = preg_replace_callback("/([a-z])-([a-z])/", function($mch){
-					return $mch[1].strtoupper($mch[2]);
-				}, $name);
+				$varName = self::camelize($name);
 				self::$refCacheProp[$c][$name] =  self::$refCacheObj[$c]->getProperty($varName);
 				self::$refCacheProp[$c][$name]->setAccessible(true);
 			} catch (\ReflectionException $e) {
@@ -46,6 +53,23 @@ abstract class AbstractEncoder {
 			}
 		}
 		return self::$refCacheProp[$c][$name];
+	}
+
+
+	public static function classify($word)
+	{
+		return str_replace(" ", "", ucwords(strtr($word, "_-", "  ")));
+	}
+
+	/**
+	 * Camelize a word. This uses the classify() method and turns the first character to lowercase
+	 *
+	 * @param string $word
+	 * @return string $word
+	 */
+	public static function camelize($word)
+	{
+		return lcfirst(self::classify($word));
 	}
 
 }

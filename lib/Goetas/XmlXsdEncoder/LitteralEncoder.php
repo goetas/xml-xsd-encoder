@@ -110,6 +110,7 @@ class LitteralEncoder extends AbstractEncoder {
 		$this->toMap[$xsd]["decimal"] = $simpleToInt;
 
 		$this->toMap[$xsd]["string"] = $simpleToStr;
+		$this->toMap[$xsd]["base64Binary"] = $simpleToStr;
 		$this->toMap[$xsd]["anyURI"] = $simpleToStr;
 
 		$this->toMap[$xsd]["boolean"] = $simpleToBool;
@@ -133,7 +134,7 @@ class LitteralEncoder extends AbstractEncoder {
 		$this->fromMap[$xsd]["string"] = $simpleFromStr;
 		$this->fromMap[$xsd]["anyURI"] = $simpleFromStr;
 		$this->fromMap[$xsd]["QName"] = $simpleFromStr;
-
+		$this->fromMap[$xsd]["base64Binary"] = $simpleFromStr;
 
 		$this->fromMap[$xsd]["boolean"] = $simpleFromBool;
 
@@ -182,8 +183,16 @@ class LitteralEncoder extends AbstractEncoder {
 					$elementQualified = $element->getQualification()=="qualified";
 					$newType = $element->getType();
 
-
-					if($element->getMax()>1 && (is_array($variable) || $variable instanceof \Traversable)){
+					if($element->getMax()>1 && ($val = self::tryGetValueFrom($variable, $element->getName())) && (is_array($val) || $val instanceof \Traversable)){
+						foreach ($val as $nval){
+							if($elementQualified){
+								$newNode = $node->addPrefixedChild($element->getNs(), $element->getName());
+							}else{
+								$newNode = $node->addChild($element->getName());
+							}
+							$this->encode($nval, $newNode, $newType);
+						}
+					}elseif($element->getMax()>1 && (is_array($variable) || $variable instanceof \Traversable)){
 
 						foreach ($variable as $nval){
 							if($elementQualified){
