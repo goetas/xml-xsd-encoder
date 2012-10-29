@@ -1,0 +1,21 @@
+{
+    "name": "goetas/xml-xsd-encoder",
+    "description": "Convert PHP to XML and viceversa using XML Schema definition as encoding style",
+    "keywords": ["xsd", "xml"],
+    "homepage": "http://opensource.mercuriosistemi.com/projects/show/xmldom",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Asmir Mustafic",
+            "email": "goetas@lignano.it"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "goetas/xmldom": "*"
+    },
+    "autoload": {
+        "psr-0": { "Goetas\\XmlXsdEncoder": "lib/" }
+    },
+    "minimum-stability": "dev"
+}
