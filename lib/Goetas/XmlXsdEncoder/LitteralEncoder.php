@@ -183,7 +183,11 @@ class LitteralEncoder extends AbstractEncoder {
 					$elementQualified = $element->getQualification()=="qualified";
 					$newType = $element->getType();
 
-					if($element->getMax()>1 && ($val = self::tryGetValueFrom($variable, $element->getName())) && (is_array($val) || $val instanceof \Traversable)){
+					if($element->getMax()>1 && 
+							($val = self::tryGetValueFrom($variable, $element->getName()))
+							&& (is_array($val) || $val instanceof \Traversable)
+							
+					){
 						foreach ($val as $nval){
 							if($elementQualified){
 								$newNode = $node->addPrefixedChild($element->getNs(), $element->getName());

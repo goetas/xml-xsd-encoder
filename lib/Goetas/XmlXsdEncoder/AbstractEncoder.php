@@ -4,7 +4,7 @@ namespace Goetas\XmlXsdEncoder;
 
 use Doctrine\Common\Util\Inflector;
 
-abstract class AbstractEncoder {
+abstract class AbstractEncoder implements EncoderInterface {
 
 	private static $refCacheProp = array();
 	private static $refCacheObj = array();
@@ -13,6 +13,7 @@ abstract class AbstractEncoder {
 		if(is_array($variabile) && isset($variabile[$index])){
 			return $variabile[$index];
 		}elseif(is_object($variabile)){
+			$index = self::camelize($index);
 			return self::objectExtract($variabile, $index)->getValue($variabile);
 		}
 	}
@@ -29,6 +30,7 @@ abstract class AbstractEncoder {
 		}elseif($variabile instanceof \stdClass){
 			$variabile->$index =  $value;
 		}elseif(is_object($variabile)){
+			$index = self::camelize($index);
 			self::objectExtract($variabile, $index)->setValue($variabile, $value);
 		}
 	}
@@ -39,17 +41,17 @@ abstract class AbstractEncoder {
 	}
 	protected static function objectExtract($obj, $name) {
 		$c = get_class($obj);
+	
 		if(!isset(self::$refCacheProp[$c][$name])){
 
 			if(!isset(self::$refCacheObj[$c])){
 				self::$refCacheObj[$c] = new \ReflectionObject($obj);
 			}
-			try {
-				$varName = self::camelize($name);
-				self::$refCacheProp[$c][$name] =  self::$refCacheObj[$c]->getProperty($varName);
+			try {				
+				self::$refCacheProp[$c][$name] =  self::$refCacheObj[$c]->getProperty($name);
 				self::$refCacheProp[$c][$name]->setAccessible(true);
 			} catch (\ReflectionException $e) {
-				throw new \Exception("Non trovo la proprieta '$varName' su '$c'", $e->getCode(), $e);
+				throw $e;
 			}
 		}
 		return self::$refCacheProp[$c][$name];
@@ -69,6 +71,9 @@ abstract class AbstractEncoder {
 	 */
 	public static function camelize($word)
 	{
+		if($word=="__value"){
+			return $word; 
+		}
 		return lcfirst(self::classify($word));
 	}
 
