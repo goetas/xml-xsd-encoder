@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "goetas/xmldom": "*"
+        "goetas/xmldom": "*",
+        "goetas/goetas-xsd-reader": "*"
     },
     "autoload": {
         "psr-0": { "Goetas\\XmlXsdEncoder": "lib/" }
