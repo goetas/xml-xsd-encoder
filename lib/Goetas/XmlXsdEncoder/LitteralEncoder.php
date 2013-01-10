@@ -107,7 +107,9 @@ class LitteralEncoder extends AbstractEncoder {
 		$this->toMap[$xsd]["short"] = $simpleToInt;
 
 		$this->toMap[$xsd]["double"] = $simpleToFloat;
+		$this->toMap[$xsd]["float"] = $simpleToFloat;
 		$this->toMap[$xsd]["decimal"] = $simpleToInt;
+		
 
 		$this->toMap[$xsd]["string"] = $simpleToStr;
 		$this->toMap[$xsd]["base64Binary"] = $simpleToStr;
@@ -129,6 +131,7 @@ class LitteralEncoder extends AbstractEncoder {
 		$this->fromMap[$xsd]["long"] = $simpleFromInt;
 
 		$this->fromMap[$xsd]["double"] = $simpleFromFloat;
+		$this->fromMap[$xsd]["float"] = $simpleFromFloat;
 		$this->fromMap[$xsd]["decimal"] = $simpleFromFloat;
 
 		$this->fromMap[$xsd]["string"] = $simpleFromStr;
