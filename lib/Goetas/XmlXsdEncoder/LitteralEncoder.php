@@ -75,7 +75,12 @@ class LitteralEncoder extends AbstractEncoder {
 		};
 		$simpleToInt = function($data){
 			if(is_object($data)){
-				$data = strval($data);
+				throw new \Exception("Can not convert object of type ".get_class($data)." to integer");
+				try {
+					$data = strval($data);
+				} catch (\Exception $e) {
+					throw new \Exception("Can not convert object of type ".get_class($data)." to integer");
+				}
 			}
 			return intval($data);
 		};
@@ -109,7 +114,7 @@ class LitteralEncoder extends AbstractEncoder {
 		$this->toMap[$xsd]["double"] = $simpleToFloat;
 		$this->toMap[$xsd]["float"] = $simpleToFloat;
 		$this->toMap[$xsd]["decimal"] = $simpleToInt;
-		
+
 
 		$this->toMap[$xsd]["string"] = $simpleToStr;
 		$this->toMap[$xsd]["base64Binary"] = $simpleToStr;
@@ -186,10 +191,10 @@ class LitteralEncoder extends AbstractEncoder {
 					$elementQualified = $element->getQualification()=="qualified";
 					$newType = $element->getType();
 
-					if($element->getMax()>1 && 
+					if($element->getMax()>1 &&
 							($val = self::tryGetValueFrom($variable, $element->getName()))
 							&& (is_array($val) || $val instanceof \Traversable)
-							
+
 					){
 						foreach ($val as $nval){
 							if($elementQualified){
