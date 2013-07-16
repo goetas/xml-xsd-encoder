@@ -75,7 +75,6 @@ class LitteralEncoder extends AbstractEncoder {
 		};
 		$simpleToInt = function($data){
 			if(is_object($data)){
-				throw new \Exception("Can not convert object of type ".get_class($data)." to integer");
 				try {
 					$data = strval($data);
 				} catch (\Exception $e) {
