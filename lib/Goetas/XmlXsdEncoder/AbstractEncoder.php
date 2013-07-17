@@ -4,7 +4,7 @@ namespace Goetas\XmlXsdEncoder;
 
 use Doctrine\Common\Util\Inflector;
 
-abstract class AbstractEncoder implements EncoderInterface {
+abstract class AbstractEncoder {
 
 	private static $refCacheProp = array();
 	private static $refCacheObj = array();
@@ -41,13 +41,13 @@ abstract class AbstractEncoder implements EncoderInterface {
 	}
 	protected static function objectExtract($obj, $name) {
 		$c = get_class($obj);
-	
+
 		if(!isset(self::$refCacheProp[$c][$name])){
 
 			if(!isset(self::$refCacheObj[$c])){
 				self::$refCacheObj[$c] = new \ReflectionObject($obj);
 			}
-			try {				
+			try {
 				self::$refCacheProp[$c][$name] =  self::$refCacheObj[$c]->getProperty($name);
 				self::$refCacheProp[$c][$name]->setAccessible(true);
 			} catch (\ReflectionException $e) {
@@ -72,7 +72,7 @@ abstract class AbstractEncoder implements EncoderInterface {
 	public static function camelize($word)
 	{
 		if($word=="__value"){
-			return $word; 
+			return $word;
 		}
 		return lcfirst(self::classify($word));
 	}
