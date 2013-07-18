@@ -18,4 +18,7 @@
     "autoload": {
         "psr-0": { "Goetas\\XmlXsdEncoder": "lib/" }
     }
+    "branch-alias": {
+        "dev-master": "2.0-dev"
+    }
 }
