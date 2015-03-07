@@ -84,14 +84,14 @@ class LitteralEncoder extends AbstractEncoder {
 			return intval($data);
 		};
 		$simpleToFloat = function($data){
-			return number_format($data, 20, ".", "");
+			return number_format((string)$data, 20, ".", "");
 		};
 
 		$simpleToBool = function( $data){
 			return $data?'true':'false';
 		};
 		$simpleToDecimal = function( $data){
-			return number_format(round($data,2), 2,'.','');
+			return number_format(round((string)$data,2), 2,'.','');
 		};
 		$simpleToDate = function($format){
 			return function($data)use($format){
@@ -348,7 +348,7 @@ class LitteralEncoder extends AbstractEncoder {
 			if ($xsd instanceof SimpleType &&  $base){
 				return $this->convertSimpleXmlPhp($node, $base);
 			}else{
-				throw new \Exception("Non trovo una codifica da XML a PHP per ".$xsd." di ".$node->nodeValue);
+				throw new \Exception("Non trovo una codifica da XML a PHP per ".$xsd." di ".htmlentities($node instanceof \DOMElement?$node->saveXML():$node->nodeValue));
 			}
 		}
 	}
