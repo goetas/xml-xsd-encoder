@@ -99,6 +99,8 @@ class LitteralEncoder extends AbstractEncoder {
 					return $data->format($format);
 				}elseif(is_numeric($data)){
 					return date($format, $data);
+				}elseif(is_string($data)){
+					return date($format, strtotime($data));
 				}
 			};
 		};
@@ -167,7 +169,6 @@ class LitteralEncoder extends AbstractEncoder {
 			foreach ($type->getAttributes() as $attribute){
 
 				$val  = self::getValueFrom($variable, $attribute->getName());
-
 				if($val!==null){
 					if($attribute->getQualification()=="qualified"){
 						$node->setAttributeNs($attribute->getNs(), $node->getPrefixFor($attribute->getNs()).":".$attribute->getName(), $this->convertSimplePhpXml($val, $attribute->getType()));
@@ -261,13 +262,16 @@ class LitteralEncoder extends AbstractEncoder {
 	}
 	public function decodeInto(\DOMNode $node, Type $type , $variabile) {
 		if($type instanceof AbstractComplexType){
-
-			if($type instanceof SimpleContent && $variabile instanceof \stdClass){ // hack per i complex type simple content
-				$newVariabile = new \stdClass();
-				$newVariabile->_ = $variabile;
-				$variabile = $newVariabile;
-			}elseif($type instanceof SimpleContent && $type->getBase()){
-				self::setValueTo($variabile, '__value', $this->decode($node, $type->getBase()));
+			if ($type instanceof SimpleContent){
+				if($variabile instanceof \stdClass){ // hack per i complex type simple content
+					$newVariabile = new \stdClass();
+					$newVariabile->_ = $variabile;
+					$variabile = $newVariabile;
+				}elseif($type->getBase() instanceof SimpleType){
+					self::setValueTo($variabile, '__value', $this->decode($node, $type->getBase()));
+				}elseif($type->getBase() instanceof SimpleContent){
+					$this->decodeInto($node, $type->getBase(), $variabile);
+				}
 			}
 
 			foreach ($type->getAttributes() as $attribute){
