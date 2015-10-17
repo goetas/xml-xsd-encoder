@@ -22,10 +22,13 @@ class LitteralEncoder extends AbstractEncoder {
 
 	protected $fromFallback = array();
 
+	protected $allowUnqualifiedElements = false;
+
 	const NS_XSI = 'http://www.w3.org/2001/XMLSchema-instance';
 
-	public function __construct() {
+	public function __construct($allowUnqualifiedElements = false) {
 		$this->addDefaultMap();
+		$this->allowUnqualifiedElements = $allowUnqualifiedElements;
 	}
 	public function addToMappings($mappings) {
 		foreach ($mappings as $ns => $data){
@@ -301,13 +304,15 @@ class LitteralEncoder extends AbstractEncoder {
 					$ns = $element->getQualification()=="qualified"?$element->getNs():"";
 					$nm = $element->getName();
 
-					if(isset($childs[$ns][$nm])){
+					$nodes = isset($childs[$ns][$nm]) ? $childs[$ns][$nm] : ($this->allowUnqualifiedElements && isset($childs[''][$nm]) ? $childs[''][$nm] : null);
+
+					if ($nodes!==null) {
 						if ($element->getMax()>1){
-							foreach ($childs[$ns][$nm] as $elementNode){
+							foreach ($nodes as $elementNode){
 								self::addValueTo($variabile, $this->decode($elementNode, $elementType ));
 							}
 						}else{
-							$elementNode = array_shift($childs[$ns][$nm]);
+							$elementNode = array_shift($nodes);
 							$value = $this->decode($elementNode, $elementType );
 							if($value instanceof \stdClass && is_object($variabile) && !($variabile instanceof \stdClass ) ){
 								throw new \Exception("Non trovo nessuna conversione valida per tag per il tipo {{$elementType->getNs()}}#{$elementType->getName()}");
